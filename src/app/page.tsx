@@ -16,12 +16,12 @@ let subjectIdCounter = 1;
 
 export default function GPAMatePage() {
   const [semesters, setSemesters] = useState<Semester[]>([
-    { id: semesterIdCounter++, name: 'Semester 1', subjects: [{ id: subjectIdCounter++, name: '', grade: '', percentage: '', credit: 3 }] }
+    { id: semesterIdCounter++, name: 'Semester 1', subjects: [{ id: subjectIdCounter++, name: '', grade: '', credit: 3 }] }
   ]);
 
   const handleAddSemester = () => {
     const newId = semesterIdCounter++;
-    setSemesters([...semesters, { id: newId, name: `Semester ${newId}`, subjects: [{ id: subjectIdCounter++, name: '', grade: '', percentage: '', credit: 3 }] }]);
+    setSemesters([...semesters, { id: newId, name: `Semester ${newId}`, subjects: [{ id: subjectIdCounter++, name: '', grade: '', credit: 3 }] }]);
   };
 
   const handleRemoveSemester = (semesterIdToRemove: number) => {
@@ -31,7 +31,7 @@ export default function GPAMatePage() {
   const handleAddSubject = (semesterId: number) => {
     setSemesters(semesters.map(s => 
       s.id === semesterId 
-        ? { ...s, subjects: [...s.subjects, { id: subjectIdCounter++, name: '', grade: '', percentage: '', credit: 3 }] } 
+        ? { ...s, subjects: [...s.subjects, { id: subjectIdCounter++, name: '', grade: '', credit: 3 }] } 
         : s
     ));
   };
@@ -84,7 +84,7 @@ export default function GPAMatePage() {
     allSubjects.forEach(sub => {
       const credit = typeof sub.credit === 'string' ? parseFloat(sub.credit) : sub.credit;
       if (!isNaN(credit) && credit > 0) {
-        const gp = gradeToPoint(sub.grade, sub.percentage);
+        const gp = gradeToPoint(sub.grade);
         totalPoints += gp * credit;
         totalCreditsData += credit;
       }
@@ -177,10 +177,6 @@ export default function GPAMatePage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div>
-                <h3 className="font-semibold text-lg text-accent">Getting your Grade Points</h3>
-                <p className="text-muted-foreground mt-2">You can enter either a letter grade (e.g., A+, B) or a percentage. If you enter a percentage, I'll convert it to a standard grade point for you. The app prioritizes the letter grade if both are entered.</p>
-              </div>
               <div>
                 <h3 className="font-semibold text-lg text-accent">📘 GPA Calculations (for one semester)</h3>
                 <p className="text-muted-foreground mt-2">I’ll calculate your GPA using the standard formula:</p>

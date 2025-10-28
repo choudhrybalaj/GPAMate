@@ -2,7 +2,6 @@ export interface Subject {
   id: number;
   name: string;
   grade: string;
-  percentage: string;
   credit: number | string;
 }
 

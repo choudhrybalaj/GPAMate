@@ -34,20 +34,19 @@ export function SemesterCard({ semester, onAddSubject, onRemoveSubject, onInputC
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 gap-y-2 text-sm font-medium text-muted-foreground px-2 hidden md:grid md:grid-cols-11 md:gap-4 items-center">
-            <div className="md:col-span-3">Subject Name</div>
+        <div className="grid grid-cols-1 gap-y-2 text-sm font-medium text-muted-foreground px-2 hidden md:grid md:grid-cols-8 md:gap-4 items-center">
+            <div className="md:col-span-4">Subject Name</div>
             <div className="md:col-span-2">Grade (A+, B...)</div>
-            <div className="md:col-span-2">Percentage (%)</div>
-            <div className="md:col-span-2">Credit Hours</div>
-            <div className="md:col-span-2"></div>
+            <div className="md:col-span-1">Credit Hours</div>
+            <div className="md:col-span-1"></div>
         </div>
 
         {semester.subjects.map((sub) => (
-          <div key={sub.id} className="grid grid-cols-1 md:grid-cols-11 gap-2 md:gap-4 mb-3 items-center p-2 rounded-lg hover:bg-slate-100/50 dark:hover:bg-slate-800/50">
+          <div key={sub.id} className="grid grid-cols-1 md:grid-cols-8 gap-2 md:gap-4 mb-3 items-center p-2 rounded-lg hover:bg-slate-100/50 dark:hover:bg-slate-800/50">
             <Input
               placeholder="e.g. Calculus"
               aria-label="Subject Name"
-              className="md:col-span-3"
+              className="md:col-span-4"
               value={sub.name}
               onChange={(e) => onInputChange(semester.id, sub.id, 'name', e.target.value)}
             />
@@ -59,22 +58,14 @@ export function SemesterCard({ semester, onAddSubject, onRemoveSubject, onInputC
               onChange={(e) => onInputChange(semester.id, sub.id, 'grade', e.target.value)}
             />
             <Input
-              placeholder="e.g. 88"
-              aria-label="Percentage"
-              type="number"
-              className="md:col-span-2"
-              value={sub.percentage}
-              onChange={(e) => onInputChange(semester.id, sub.id, 'percentage', e.target.value)}
-            />
-            <Input
               placeholder="e.g. 3"
               aria-label="Credit Hours"
               type="number"
-              className="md:col-span-2"
+              className="md:col-span-1"
               value={String(sub.credit)}
               onChange={(e) => onInputChange(semester.id, sub.id, 'credit', e.target.value)}
             />
-            <div className="md:col-span-2 flex justify-end">
+            <div className="md:col-span-1 flex justify-end">
                 <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => onRemoveSubject(semester.id, sub.id)}>
                     <Trash2 className="h-4 w-4" />
                     <span className="sr-only">Remove Subject</span>
