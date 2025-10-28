@@ -12,21 +12,24 @@ import { SummaryCard } from '@/components/gpa/SummaryCard';
 import { PerformanceCharts } from '@/components/gpa/PerformanceCharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-let semesterIdCounter = 1;
 let subjectIdCounter = 1;
 
 export default function GPAMatePage() {
   const [semesters, setSemesters] = useState<Semester[]>([
-    { id: semesterIdCounter++, name: 'Semester 1', subjects: [{ id: subjectIdCounter++, name: '', gradePoint: 4.0, credit: 3 }] }
+    { id: 1, name: 'Semester 1', subjects: [{ id: subjectIdCounter++, name: '', gradePoint: 4.0, credit: 3 }] }
   ]);
 
   const handleAddSemester = () => {
-    const newId = semesterIdCounter++;
-    setSemesters([...semesters, { id: newId, name: `Semester ${newId}`, subjects: [{ id: subjectIdCounter++, name: '', gradePoint: 4.0, credit: 3 }] }]);
+    const newSemesterNumber = semesters.length + 1;
+    setSemesters([...semesters, { id: newSemesterNumber, name: `Semester ${newSemesterNumber}`, subjects: [{ id: subjectIdCounter++, name: '', gradePoint: 4.0, credit: 3 }] }]);
   };
 
   const handleRemoveSemester = (semesterIdToRemove: number) => {
-    setSemesters(semesters.filter(s => s.id !== semesterIdToRemove));
+    setSemesters(semesters.filter(s => s.id !== semesterIdToRemove).map((s, index) => ({
+      ...s,
+      id: index + 1,
+      name: `Semester ${index + 1}`
+    })));
   };
 
   const handleAddSubject = (semesterId: number) => {
@@ -76,13 +79,21 @@ export default function GPAMatePage() {
       GPA: parseFloat(calculateGPA(s.subjects)) 
     }));
 
-    let cumulativeGpaSum = 0;
-    const cgpaTrendData: CgpaData[] = semesterGpasData.map((s, i) => {
-      const validGpas = semesterGpasData.slice(0, i + 1).filter(g => !isNaN(g.GPA));
-      const sum = validGpas.reduce((acc, val) => acc + val.GPA, 0);
-      return { 
-        name: s.name, 
-        CGPA: validGpas.length > 0 ? (sum / validGpas.length).toFixed(2) : "0.00"
+    const cgpaTrendData: CgpaData[] = semesters.map((_, i) => {
+      const allSubjectsInvolved = semesters.slice(0, i + 1).flatMap(s => s.subjects);
+      let totalPoints = 0;
+      let totalCreditsInvolved = 0;
+      allSubjectsInvolved.forEach(sub => {
+        const credit = typeof sub.credit === 'string' ? parseFloat(sub.credit) : sub.credit;
+        if (!isNaN(credit) && credit > 0) {
+          const gp = typeof sub.gradePoint === 'string' ? parseFloat(sub.gradePoint) : sub.gradePoint;
+          totalPoints += gp * credit;
+          totalCreditsInvolved += credit;
+        }
+      });
+      return {
+        name: `Semester ${i + 1}`,
+        CGPA: totalCreditsInvolved > 0 ? (totalPoints / totalCreditsInvolved).toFixed(2) : "0.00"
       };
     });
 
@@ -167,17 +178,17 @@ export default function GPAMatePage() {
 
         {semesters.length > 0 && (
           <>
-            <motion.div variants={itemVariants} className="mt-6">
+            <motion.div variants={itemVariants}>
               <SummaryCard totalCredits={totalCredits} cgpa={cgpa} />
             </motion.div>
 
-            <motion.div variants={itemVariants} className="mt-6">
+            <motion.div variants={itemVariants}>
               <PerformanceCharts semesterGpas={semesterGpas} cgpaTrend={cgpaTrend} />
             </motion.div>
           </>
         )}
 
-        <motion.div variants={itemVariants} className="mt-6">
+        <motion.div variants={itemVariants}>
           <Card className="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg dark:bg-slate-900/70 dark:border-slate-800">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl font-semibold text-primary">
