@@ -178,6 +178,10 @@ export default function GPAMatePage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
+                <h3 className="font-semibold text-lg text-accent">Getting your Grade Points</h3>
+                <p className="text-muted-foreground mt-2">You can enter either a letter grade (e.g., A+, B) or a percentage. If you enter a percentage, I'll convert it to a standard grade point for you. The app prioritizes the letter grade if both are entered.</p>
+              </div>
+              <div>
                 <h3 className="font-semibold text-lg text-accent">📘 GPA Calculations (for one semester)</h3>
                 <p className="text-muted-foreground mt-2">I’ll calculate your GPA using the standard formula:</p>
                 <div className="text-center p-4 rounded-lg mt-2">
