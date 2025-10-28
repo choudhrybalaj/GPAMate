@@ -4,11 +4,12 @@ import React, { useState, useMemo } from 'react';
 import type { Semester, Subject, GpaData, CgpaData } from '@/types/gpa';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { GraduationCap, Heart, Plus } from 'lucide-react';
+import { GraduationCap, Heart, Plus, BookOpen } from 'lucide-react';
 import { calculateGPA, gradeToPoint } from '@/lib/gpa-utils';
 import { SemesterCard } from '@/components/gpa/SemesterCard';
 import { SummaryCard } from '@/components/gpa/SummaryCard';
 import { PerformanceCharts } from '@/components/gpa/PerformanceCharts';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 let semesterIdCounter = 1;
 let subjectIdCounter = 1;
@@ -166,11 +167,38 @@ export default function GPAMatePage() {
             </motion.div>
           </>
         )}
+
+        <motion.div variants={itemVariants} className="mt-6">
+          <Card className="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg dark:bg-slate-900/70 dark:border-slate-800">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-2xl font-semibold text-primary">
+                <BookOpen className="h-6 w-6" />
+                How It Works
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <h3 className="font-semibold text-lg text-accent">📘 GPA Calculations (for one semester)</h3>
+                <p className="text-muted-foreground mt-2">I’ll calculate your GPA using the standard formula:</p>
+                <div className="text-center p-4 rounded-lg mt-2">
+                  <p className="text-lg font-mono">GPA = ∑(Grade Points × Credit Hours) / ∑(Credit Hours)</p>
+                </div>
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg text-accent">📗 CGPA Calculations (for all semesters)</h3>
+                <p className="text-muted-foreground mt-2">You give me data for all the semesters you’ve completed. I’ll calculate your Cumulative GPA (CGPA) using:</p>
+                <div className="text-center p-4 rounded-lg mt-2">
+                   <p className="text-lg font-mono">CGPA = ∑(Grade Points × Credit Hours) / ∑(Credit Hours)</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       </motion.div>
 
       <footer className="mt-12 text-center text-muted-foreground text-sm">
-        <p className="flex items-center justify-center gap-1">
-          Made with <Heart className="h-4 w-4 text-red-500 fill-current" /> for students everywhere.
+        <p className="flex items-center justify-center gap-1.5">
+          Made by Choudhry Balaj with <Heart className="h-4 w-4 text-red-500 fill-current" /> for students everywhere.
         </p>
       </footer>
     </main>
