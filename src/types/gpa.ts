@@ -1,7 +1,7 @@
 export interface Subject {
   id: number;
   name: string;
-  grade: string;
+  gradePoint: number | string;
   credit: number | string;
 }
 

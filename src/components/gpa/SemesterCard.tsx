@@ -11,7 +11,7 @@ interface SemesterCardProps {
   semester: Semester;
   onAddSubject: (semesterId: number) => void;
   onRemoveSubject: (semesterId: number, subjectId: number) => void;
-  onInputChange: (semesterId: number, subjectId: number, field: keyof Subject, value: string) => void;
+  onInputChange: (semesterId: number, subjectId: number, field: keyof Omit<Subject, 'id'>, value: string | number) => void;
   onRemoveSemester: (semesterId: number) => void;
 }
 
@@ -36,7 +36,7 @@ export function SemesterCard({ semester, onAddSubject, onRemoveSubject, onInputC
       <CardContent>
         <div className="grid grid-cols-1 gap-y-2 text-sm font-medium text-muted-foreground px-2 hidden md:grid md:grid-cols-8 md:gap-4 items-center">
             <div className="md:col-span-4">Subject Name</div>
-            <div className="md:col-span-2">Grade (A+, B...)</div>
+            <div className="md:col-span-2">Grade Point (0-4)</div>
             <div className="md:col-span-1">Credit Hours</div>
             <div className="md:col-span-1"></div>
         </div>
@@ -51,11 +51,15 @@ export function SemesterCard({ semester, onAddSubject, onRemoveSubject, onInputC
               onChange={(e) => onInputChange(semester.id, sub.id, 'name', e.target.value)}
             />
             <Input
-              placeholder="e.g. A-"
-              aria-label="Grade"
+              type="number"
+              placeholder="e.g. 3.8"
+              aria-label="Grade Point"
               className="md:col-span-2"
-              value={sub.grade}
-              onChange={(e) => onInputChange(semester.id, sub.id, 'grade', e.target.value)}
+              value={String(sub.gradePoint)}
+              onChange={(e) => onInputChange(semester.id, sub.id, 'gradePoint', e.target.value)}
+              min="0"
+              max="4"
+              step="0.01"
             />
             <Input
               placeholder="e.g. 3"

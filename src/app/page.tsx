@@ -6,7 +6,7 @@ import type { Semester, Subject, GpaData, CgpaData } from '@/types/gpa';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { GraduationCap, Heart, Plus, BookOpen } from 'lucide-react';
-import { calculateGPA, gradeToPoint } from '@/lib/gpa-utils';
+import { calculateGPA } from '@/lib/gpa-utils';
 import { SemesterCard } from '@/components/gpa/SemesterCard';
 import { SummaryCard } from '@/components/gpa/SummaryCard';
 import { PerformanceCharts } from '@/components/gpa/PerformanceCharts';
@@ -17,12 +17,12 @@ let subjectIdCounter = 1;
 
 export default function GPAMatePage() {
   const [semesters, setSemesters] = useState<Semester[]>([
-    { id: semesterIdCounter++, name: 'Semester 1', subjects: [{ id: subjectIdCounter++, name: '', grade: '', credit: 3 }] }
+    { id: semesterIdCounter++, name: 'Semester 1', subjects: [{ id: subjectIdCounter++, name: '', gradePoint: 4.0, credit: 3 }] }
   ]);
 
   const handleAddSemester = () => {
     const newId = semesterIdCounter++;
-    setSemesters([...semesters, { id: newId, name: `Semester ${newId}`, subjects: [{ id: subjectIdCounter++, name: '', grade: '', credit: 3 }] }]);
+    setSemesters([...semesters, { id: newId, name: `Semester ${newId}`, subjects: [{ id: subjectIdCounter++, name: '', gradePoint: 4.0, credit: 3 }] }]);
   };
 
   const handleRemoveSemester = (semesterIdToRemove: number) => {
@@ -32,7 +32,7 @@ export default function GPAMatePage() {
   const handleAddSubject = (semesterId: number) => {
     setSemesters(semesters.map(s => 
       s.id === semesterId 
-        ? { ...s, subjects: [...s.subjects, { id: subjectIdCounter++, name: '', grade: '', credit: 3 }] } 
+        ? { ...s, subjects: [...s.subjects, { id: subjectIdCounter++, name: '', gradePoint: 4.0, credit: 3 }] } 
         : s
     ));
   };
@@ -52,7 +52,15 @@ export default function GPAMatePage() {
       if (s.id === semesterId) {
         const updatedSubjects = s.subjects.map(sub => {
           if (sub.id === subjectId) {
-            return { ...sub, [field]: value };
+            let processedValue = value;
+            if (field === 'gradePoint' || field === 'credit') {
+              processedValue = typeof value === 'string' ? parseFloat(value) : value;
+              if (field === 'gradePoint') {
+                if (processedValue > 4) processedValue = 4;
+                if (processedValue < 0) processedValue = 0;
+              }
+            }
+            return { ...sub, [field]: processedValue };
           }
           return sub;
         });
@@ -85,7 +93,7 @@ export default function GPAMatePage() {
     allSubjects.forEach(sub => {
       const credit = typeof sub.credit === 'string' ? parseFloat(sub.credit) : sub.credit;
       if (!isNaN(credit) && credit > 0) {
-        const gp = gradeToPoint(sub.grade);
+        const gp = typeof sub.gradePoint === 'string' ? parseFloat(sub.gradePoint) : sub.gradePoint;
         totalPoints += gp * credit;
         totalCreditsData += credit;
       }
@@ -145,7 +153,7 @@ export default function GPAMatePage() {
               semester={sem}
               onAddSubject={handleAddSubject}
               onRemoveSubject={handleRemoveSubject}
-              onInputChange={handleInputChange as any}
+              onInputChange={handleInputChange}
               onRemoveSemester={handleRemoveSemester}
             />
           </motion.div>
@@ -181,7 +189,7 @@ export default function GPAMatePage() {
               <div>
                 <h3 className="font-semibold text-lg text-accent">📘 Semester GPA Calculation</h3>
                 <p className="text-muted-foreground mt-2">
-                  I'll calculate your GPA by multiplying each grade point you receive by the number of credit hours for that course, adding up the totals, and then dividing by the total number of credit hours taken in that semester.
+                  The semester GPA is calculated by multiplying the grade points for each course by the credit hours for that course, summing those values, and then dividing by the total number of credit hours for that semester.
                 </p>
                 <div className="text-center p-4 rounded-lg mt-2">
                   <p className="text-lg font-mono">GPA = ∑(Grade Points × Credit Hours) / ∑(Credit Hours)</p>
@@ -189,9 +197,9 @@ export default function GPAMatePage() {
               </div>
               <div>
                 <h3 className="font-semibold text-lg text-accent">📗 CGPA Calculations (for all semesters)</h3>
-                <p className="text-muted-foreground mt-2">You give me data for all the semesters you’ve completed. I’ll calculate your Cumulative GPA (CGPA) using:</p>
+                <p className="text-muted-foreground mt-2">Your Cumulative GPA (CGPA) is calculated by taking the sum of all grade points multiplied by their respective credit hours across all semesters and dividing by the total sum of all credit hours.</p>
                 <div className="text-center p-4 rounded-lg mt-2">
-                   <p className="text-lg font-mono">CGPA = ∑(Grade Points × Credit Hours) / ∑(Credit Hours)</p>
+                   <p className="text-lg font-mono">CGPA = ∑(Grade Points × Credit Hours) / ∑(Total Credit Hours)</p>
                 </div>
               </div>
             </CardContent>
@@ -201,11 +209,9 @@ export default function GPAMatePage() {
 
       <footer className="mt-12 text-center text-muted-foreground text-sm">
         <p className="flex items-center justify-center gap-1.5">
-          Made by Choudhry Balaj with <Heart className="h-4 w-4 text-red-500 fill-current" /> for students everywhere.
+          Made with <Heart className="h-4 w-4 text-red-500 fill-current" /> by Choudhry Balaj for students everywhere.
         </p>
       </footer>
     </main>
   );
 }
-
-    
