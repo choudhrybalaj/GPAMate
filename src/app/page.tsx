@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useMemo } from 'react';
@@ -178,8 +179,10 @@ export default function GPAMatePage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <h3 className="font-semibold text-lg text-accent">📘 GPA Calculations (for one semester)</h3>
-                <p className="text-muted-foreground mt-2">I’ll calculate your GPA using the standard formula:</p>
+                <h3 className="font-semibold text-lg text-accent">📘 Semester GPA Calculation</h3>
+                <p className="text-muted-foreground mt-2">
+                  I'll calculate your GPA by multiplying each grade point you receive by the number of credit hours for that course, adding up the totals, and then dividing by the total number of credit hours taken in that semester.
+                </p>
                 <div className="text-center p-4 rounded-lg mt-2">
                   <p className="text-lg font-mono">GPA = ∑(Grade Points × Credit Hours) / ∑(Credit Hours)</p>
                 </div>
@@ -204,3 +207,5 @@ export default function GPAMatePage() {
     </main>
   );
 }
+
+    
