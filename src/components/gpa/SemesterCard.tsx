@@ -72,7 +72,7 @@ export function SemesterCard({ semester, onAddSubject, onRemoveSubject, onInputC
               onChange={(e) => onInputChange(semester.id, sub.id, 'credit', e.target.value)}
             />
             <div className="md:col-span-1 flex justify-end">
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => onRemoveSubject(semester.id, sub.id)} disabled={semester.subjects.length === 1}>
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive" onClick={() => onRemoveSubject(semester.id, sub.id)} disabled={semester.subjects.length === 1}>
                     <Trash2 className="h-4 w-4" />
                     <span className="sr-only">Remove Subject</span>
                 </Button>
