@@ -11,6 +11,8 @@ import { SemesterCard } from '@/components/gpa/SemesterCard';
 import { SummaryCard } from '@/components/gpa/SummaryCard';
 import { PerformanceCharts } from '@/components/gpa/PerformanceCharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 
 let subjectIdCounter = 1;
 let semesterIdCounter = 1;
@@ -20,6 +22,7 @@ export default function GPAMatePage() {
   const [semesters, setSemesters] = useState<Semester[]>([
     { id: semesterIdCounter++, name: 'Semester 1', subjects: [{ id: subjectIdCounter++, name: '', gradePoint: 4.0, credit: 3 }] }
   ]);
+  const [includeVu001Credit, setIncludeVu001Credit] = useState(false);
 
   const handleAddSemester = () => {
     const newSemesterName = `Semester ${semesters.length + 1}`;
@@ -115,24 +118,34 @@ export default function GPAMatePage() {
 
     allSubjects.forEach(sub => {
       const credit = typeof sub.credit === 'string' ? parseFloat(sub.credit) : sub.credit;
-      if (!isNaN(credit) && credit > 0) {
+      if (!isNaN(credit)) {
+        totalCreditsData += credit;
         const gp = typeof sub.gradePoint === 'string' ? parseFloat(sub.gradePoint) : sub.gradePoint;
-        if(!isNaN(gp)) {
+        if(!isNaN(gp) && credit > 0) {
             totalPoints += gp * credit;
-            totalCreditsData += credit;
         }
       }
     });
+    
+    let gpaRelevantCredits = 0;
+    allSubjects.forEach(sub => {
+        const credit = typeof sub.credit === 'string' ? parseFloat(sub.credit) : sub.credit;
+        const gp = typeof sub.gradePoint === 'string' ? parseFloat(sub.gradePoint) : sub.gradePoint;
+        if(!isNaN(gp) && !isNaN(credit) && credit > 0){
+            gpaRelevantCredits += credit;
+        }
+    });
 
-    const cgpaData = totalCreditsData ? (totalPoints / totalCreditsData).toFixed(2) : "0.00";
+
+    const cgpaData = gpaRelevantCredits ? (totalPoints / gpaRelevantCredits).toFixed(2) : "0.00";
     
     return {
       semesterGpas: semesterGpasData,
       cgpaTrend: cgpaTrendData,
-      totalCredits: totalCreditsData,
+      totalCredits: includeVu001Credit ? totalCreditsData + 1 : totalCreditsData,
       cgpa: cgpaData
     };
-  }, [semesters]);
+  }, [semesters, includeVu001Credit]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -172,7 +185,7 @@ export default function GPAMatePage() {
         initial="hidden"
         animate="visible"
       >
-        {semesters.map((sem, index) => (
+        {semesters.map((sem) => (
           <motion.div key={sem.id} variants={itemVariants}>
             <SemesterCard
               semester={sem}
@@ -193,6 +206,17 @@ export default function GPAMatePage() {
 
         {semesters.length > 0 && (
           <>
+            <motion.div variants={itemVariants}>
+                <Card className="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg dark:bg-slate-900/70 dark:border-slate-800 p-6">
+                    <div className="flex items-center space-x-2">
+                        <Checkbox id="vu001-credit" checked={includeVu001Credit} onCheckedChange={(checked) => setIncludeVu001Credit(Boolean(checked))} />
+                        <Label htmlFor="vu001-credit" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                            Add Credit hour of VU001
+                        </Label>
+                    </div>
+                </Card>
+            </motion.div>
+
             <motion.div variants={itemVariants}>
               <SummaryCard totalCredits={totalCredits} cgpa={cgpa} />
             </motion.div>
@@ -225,7 +249,7 @@ export default function GPAMatePage() {
                 <h3 className="font-semibold text-lg text-accent">📗 CGPA Calculations (for all semesters)</h3>
                 <p className="text-muted-foreground mt-2">Your Cumulative GPA (CGPA) is calculated by taking the sum of all grade points multiplied by their respective credit hours across all semesters and dividing by the total sum of all credit hours.</p>
                 <div className="text-center p-4 rounded-lg mt-2">
-                   <p className="text-lg font-mono">CGPA = ∑(Grade Points × Credit Hours) / ∑(Total Credit Hours)</p>
+                   <p className="text-lg font-mono">CGPA = ∑(Grade Points × Credit Hours) / ∑(Credit Hours)</p>
                 </div>
               </div>
             </CardContent>
@@ -234,12 +258,8 @@ export default function GPAMatePage() {
       </motion.div>
 
       <footer className="mt-12 text-center text-muted-foreground text-sm">
-        <p>
-          Made with <Heart className="inline h-4 w-4 text-red-500 fill-current" /> by Choudhry Balaj for students everywhere.
-        </p>
+        <p>Made with <Heart className="inline h-4 w-4 text-red-500 fill-current" /> by Choudhry Balaj for students everywhere.</p>
       </footer>
     </main>
   );
 }
-
-    
