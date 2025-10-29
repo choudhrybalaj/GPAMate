@@ -22,8 +22,8 @@ export default function GPAMatePage() {
   ]);
 
   const handleAddSemester = () => {
-    const newSemesterNumber = semesters.length > 0 ? Math.max(...semesters.map(s => s.id)) + 1 : 1;
-    setSemesters([...semesters, { id: newSemesterNumber, name: `Semester ${semesters.length + 1}`, subjects: [{ id: subjectIdCounter++, name: '', gradePoint: 4.0, credit: 3 }] }]);
+    const newSemesterName = `Semester ${semesters.length + 1}`;
+    setSemesters([...semesters, { id: semesterIdCounter++, name: newSemesterName, subjects: [{ id: subjectIdCounter++, name: '', gradePoint: 4.0, credit: 3 }] }]);
   };
   
   const handleRemoveSemester = (semesterIdToRemove: number) => {
@@ -83,21 +83,29 @@ export default function GPAMatePage() {
       GPA: parseFloat(calculateGPA(s.subjects)) 
     }));
 
-    const cgpaTrendData: CgpaData[] = semesters.map((_, i) => {
-      const allSubjectsInvolved = semesters.slice(0, i + 1).flatMap(s => s.subjects);
-      let totalPoints = 0;
-      let totalCreditsInvolved = 0;
-      allSubjectsInvolved.forEach(sub => {
+    let cumulativePoints = 0;
+    let cumulativeCredits = 0;
+    const cgpaTrendData: CgpaData[] = semesters.map((s, i) => {
+      let semesterPoints = 0;
+      let semesterCredits = 0;
+
+      s.subjects.forEach(sub => {
         const credit = typeof sub.credit === 'string' ? parseFloat(sub.credit) : sub.credit;
         if (!isNaN(credit) && credit > 0) {
           const gp = typeof sub.gradePoint === 'string' ? parseFloat(sub.gradePoint) : sub.gradePoint;
-          totalPoints += gp * credit;
-          totalCreditsInvolved += credit;
+          if(!isNaN(gp)) {
+            semesterPoints += gp * credit;
+            semesterCredits += credit;
+          }
         }
       });
+
+      cumulativePoints += semesterPoints;
+      cumulativeCredits += semesterCredits;
+
       return {
-        name: `Semester ${i + 1}`,
-        CGPA: totalCreditsInvolved > 0 ? (totalPoints / totalCreditsInvolved).toFixed(2) : "0.00"
+        name: s.name,
+        CGPA: cumulativeCredits > 0 ? (cumulativePoints / cumulativeCredits).toFixed(2) : "0.00"
       };
     });
 
@@ -109,8 +117,10 @@ export default function GPAMatePage() {
       const credit = typeof sub.credit === 'string' ? parseFloat(sub.credit) : sub.credit;
       if (!isNaN(credit) && credit > 0) {
         const gp = typeof sub.gradePoint === 'string' ? parseFloat(sub.gradePoint) : sub.gradePoint;
-        totalPoints += gp * credit;
-        totalCreditsData += credit;
+        if(!isNaN(gp)) {
+            totalPoints += gp * credit;
+            totalCreditsData += credit;
+        }
       }
     });
 
@@ -162,7 +172,7 @@ export default function GPAMatePage() {
         initial="hidden"
         animate="visible"
       >
-        {semesters.map((sem) => (
+        {semesters.map((sem, index) => (
           <motion.div key={sem.id} variants={itemVariants}>
             <SemesterCard
               semester={sem}
@@ -170,6 +180,7 @@ export default function GPAMatePage() {
               onRemoveSubject={handleRemoveSubject}
               onInputChange={handleInputChange}
               onRemoveSemester={handleRemoveSemester}
+              isOnlySemester={semesters.length === 1}
             />
           </motion.div>
         ))}
@@ -186,7 +197,7 @@ export default function GPAMatePage() {
               <SummaryCard totalCredits={totalCredits} cgpa={cgpa} />
             </motion.div>
 
-            <motion.div variants={itemVariants}>
+            <motion.div variants={itemVariants} className="pb-8">
               <PerformanceCharts semesterGpas={semesterGpas} cgpaTrend={cgpaTrend} />
             </motion.div>
           </>
@@ -223,10 +234,12 @@ export default function GPAMatePage() {
       </motion.div>
 
       <footer className="mt-12 text-center text-muted-foreground text-sm">
-        <p>
+        <p className="inline-flex items-center justify-center gap-1.5">
           Made with <Heart className="inline h-4 w-4 text-red-500 fill-current" /> by Choudhry Balaj for students everywhere.
         </p>
       </footer>
     </main>
   );
 }
+
+    

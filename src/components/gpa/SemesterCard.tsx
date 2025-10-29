@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { Semester, Subject } from '@/types/gpa';
@@ -13,9 +14,10 @@ interface SemesterCardProps {
   onRemoveSubject: (semesterId: number, subjectId: number) => void;
   onInputChange: (semesterId: number, subjectId: number, field: keyof Omit<Subject, 'id'>, value: string | number) => void;
   onRemoveSemester: (semesterId: number) => void;
+  isOnlySemester: boolean;
 }
 
-export function SemesterCard({ semester, onAddSubject, onRemoveSubject, onInputChange, onRemoveSemester }: SemesterCardProps) {
+export function SemesterCard({ semester, onAddSubject, onRemoveSubject, onInputChange, onRemoveSemester, isOnlySemester }: SemesterCardProps) {
   const semesterGpa = calculateGPA(semester.subjects);
 
   return (
@@ -27,7 +29,7 @@ export function SemesterCard({ semester, onAddSubject, onRemoveSubject, onInputC
             <Button variant="outline" size="sm" onClick={() => onAddSubject(semester.id)}>
               <Plus className="mr-2 h-4 w-4" /> Add Subject
             </Button>
-            <Button variant="destructive" size="sm" onClick={() => onRemoveSemester(semester.id)}>
+            <Button variant="destructive" size="sm" onClick={() => onRemoveSemester(semester.id)} disabled={isOnlySemester}>
               <Trash2 className="mr-2 h-4 w-4" /> Remove Semester
             </Button>
           </div>
@@ -70,7 +72,7 @@ export function SemesterCard({ semester, onAddSubject, onRemoveSubject, onInputC
               onChange={(e) => onInputChange(semester.id, sub.id, 'credit', e.target.value)}
             />
             <div className="md:col-span-1 flex justify-end">
-                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => onRemoveSubject(semester.id, sub.id)}>
+                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => onRemoveSubject(semester.id, sub.id)} disabled={semester.subjects.length === 1}>
                     <Trash2 className="h-4 w-4" />
                     <span className="sr-only">Remove Subject</span>
                 </Button>
@@ -84,3 +86,5 @@ export function SemesterCard({ semester, onAddSubject, onRemoveSubject, onInputC
     </Card>
   );
 }
+
+    
