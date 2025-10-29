@@ -13,25 +13,29 @@ import { PerformanceCharts } from '@/components/gpa/PerformanceCharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 let subjectIdCounter = 1;
+let semesterIdCounter = 1;
+
 
 export default function GPAMatePage() {
   const [semesters, setSemesters] = useState<Semester[]>([
-    { id: 1, name: 'Semester 1', subjects: [{ id: subjectIdCounter++, name: '', gradePoint: 4.0, credit: 3 }] }
+    { id: semesterIdCounter++, name: 'Semester 1', subjects: [{ id: subjectIdCounter++, name: '', gradePoint: 4.0, credit: 3 }] }
   ]);
 
   const handleAddSemester = () => {
-    const newSemesterNumber = semesters.length + 1;
-    setSemesters([...semesters, { id: newSemesterNumber, name: `Semester ${newSemesterNumber}`, subjects: [{ id: subjectIdCounter++, name: '', gradePoint: 4.0, credit: 3 }] }]);
+    const newSemesterNumber = semesters.length > 0 ? Math.max(...semesters.map(s => s.id)) + 1 : 1;
+    setSemesters([...semesters, { id: newSemesterNumber, name: `Semester ${semesters.length + 1}`, subjects: [{ id: subjectIdCounter++, name: '', gradePoint: 4.0, credit: 3 }] }]);
   };
-
+  
   const handleRemoveSemester = (semesterIdToRemove: number) => {
-    setSemesters(semesters.filter(s => s.id !== semesterIdToRemove).map((s, index) => ({
-      ...s,
-      id: index + 1,
-      name: `Semester ${index + 1}`
-    })));
+    const updatedSemesters = semesters.filter(s => s.id !== semesterIdToRemove);
+    // Re-assign names based on their new order
+    const finalSemesters = updatedSemesters.map((s, index) => ({
+        ...s,
+        name: `Semester ${index + 1}`
+    }));
+    setSemesters(finalSemesters);
   };
-
+  
   const handleAddSubject = (semesterId: number) => {
     setSemesters(semesters.map(s => 
       s.id === semesterId 
@@ -219,8 +223,8 @@ export default function GPAMatePage() {
       </motion.div>
 
       <footer className="mt-12 text-center text-muted-foreground text-sm">
-        <p className="flex items-center justify-center gap-1.5">
-          Made with <Heart className="h-4 w-4 text-red-500 fill-current" /> by Choudhry Balaj for students everywhere.
+        <p>
+          Made with <Heart className="inline h-4 w-4 text-red-500 fill-current" /> by Choudhry Balaj for students everywhere.
         </p>
       </footer>
     </main>
