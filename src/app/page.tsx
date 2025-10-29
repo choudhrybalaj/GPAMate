@@ -234,7 +234,7 @@ export default function GPAMatePage() {
       </motion.div>
 
       <footer className="mt-12 text-center text-muted-foreground text-sm">
-        <p className="inline-flex items-center justify-center gap-1.5">
+        <p>
           Made with <Heart className="inline h-4 w-4 text-red-500 fill-current" /> by Choudhry Balaj for students everywhere.
         </p>
       </footer>
