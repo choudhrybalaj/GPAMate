@@ -3,7 +3,6 @@
 import React from 'react';
 import type { Semester, GpaData, CgpaData } from '@/types/gpa';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PerformanceCharts } from './PerformanceCharts';
 import { SummaryCard } from './SummaryCard';
 import { calculateGPA } from '@/lib/gpa-utils';
 
@@ -68,8 +67,6 @@ export const ReportTemplate: React.FC<ReportTemplateProps> = ({
         ))}
 
         <SummaryCard totalCredits={summary.totalCredits} cgpa={summary.cgpa} />
-
-        <PerformanceCharts semesterGpas={semesterGpas} cgpaTrend={cgpaTrend} />
       </div>
 
       <footer className="text-center mt-8 text-xs text-muted-foreground">
